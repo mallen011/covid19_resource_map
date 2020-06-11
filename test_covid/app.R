@@ -11,7 +11,7 @@ library(ggplot2)
 library(tidyr)
 
 ## SET PATH ##
-path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/user_path_here/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
