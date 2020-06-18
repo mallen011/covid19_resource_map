@@ -90,44 +90,7 @@ observeEvent(
   updateSelectInput(session,"selectcounty", "Select County", 
                     choices = counties1$NAMELSAD[counties1$STATE_NAME==input$selectstate])
 )
-  
 
-############ DISPLAY MAP  
-   output$map <- renderLeaflet({
-        
-        leaflet() %>%
-            setView(lng = -88, lat = 36.1980, zoom = 6) %>% 
-            # Add tiles as baseGroup
-       addProviderTiles(providers$CartoDB.DarkMatter) %>%
-            addPolygons(data=counties1,  
-                        color = "black", 
-                        weight = 0.1,
-                        opacity = 1.0, 
-                        fillOpacity = 0.15, 
-                        fillColor = "transparent",
-                        group= "counties",
-                        popup = popupGraph("plot"),
-                        layerId = ~counties1$GEOID,
-                   ) %>% 
-           # addPolygons(data=states, 
-            #            color = "black",
-             #           weight = 0.1,
-              #          opacity = 1.0, 
-               #         fillOpacity = 0.15, 
-                #        fillColor = "transparent",
-                 #       group= "states"
-         #   ) %>% 
-            
-        #     Layers control
-            addLayersControl( baseGroups = c("TonerLite"),
-                overlayGroups = c(
-                  "counties"
-               #   "states"),
-                ),
-                options = layersControlOptions(collapsed = FALSE) ) 
-        
-        
-    })
  
 ############## ZOOM 2 LOCATION BUTTON
    observeEvent(input$zoom2location, {
@@ -176,7 +139,7 @@ observeEvent(
    })
 
 ########### RENDER GRAPH     
-   output$plot <- renderPlot({
+   plot <- renderPlot({
      plot(randomVals())
      idd <- randomVals()
      plot(as.numeric(idd[,12:ncol(idd)]),
@@ -185,6 +148,43 @@ observeEvent(
                      idd$Country_Region,
                      sep=", ") 
      )
+     
+   })
+   
+   ############ DISPLAY MAP  
+   output$map <- renderLeaflet({
+     
+     leaflet() %>%
+       setView(lng = -88, lat = 36.1980, zoom = 6) %>% 
+       # Add tiles as baseGroup
+       addProviderTiles(providers$CartoDB.DarkMatter) %>%
+       addPolygons(data=counties1,  
+                   color = "black", 
+                   weight = 0.1,
+                   opacity = 1.0, 
+                   fillOpacity = 0.15, 
+                   fillColor = "transparent",
+                   group= "counties",
+                   popup = popupGraph("plot"),
+                   layerId = ~counties1$GEOID,
+       ) %>% 
+       # addPolygons(data=states, 
+       #            color = "black",
+       #           weight = 0.1,
+       #          opacity = 1.0, 
+       #         fillOpacity = 0.15, 
+       #        fillColor = "transparent",
+       #       group= "states"
+       #   ) %>% 
+       
+       #     Layers control
+       addLayersControl( baseGroups = c("TonerLite"),
+                         overlayGroups = c(
+                           "counties"
+                           #   "states"),
+                         ),
+                         options = layersControlOptions(collapsed = FALSE) ) 
+     
      
    })
    
