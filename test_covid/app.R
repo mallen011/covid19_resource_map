@@ -9,9 +9,11 @@ library(sp)
 library(rgdal)
 library(ggplot2)
 library(tidyr)
+library(leafpop)
+
 
 ## SET PATH ##
-path <- "C:/user_path_here/Countyapp/test_covid/"
+path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
@@ -67,8 +69,8 @@ ui <- dashboardPage(
         selectInput("selectstate", "Select State", (counties1$STATE_NAME)),
         selectInput("selectcounty", "Select County", choices = NULL),
         uiOutput("select2"),
-        actionButton("zoom2location","Take me there"),
-        actionButton("go","Plot Data")
+        actionButton("zoom2location","Take me there")
+    #    actionButton("go","Plot Data")
     ),
     dashboardBody( 
         tags$head(
@@ -76,6 +78,7 @@ ui <- dashboardPage(
         includeCSS("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Code+Pro:wght@200&display=swap") ),
         tags$style(type = "text/css", "#map {height: calc(100vh - 80px) !important;}"),
         leafletOutput("map")
+    #    plotOutput("plot")
     )
 )
 ##################################### SERVER ###########################################
@@ -96,20 +99,31 @@ observeEvent(
             setView(lng = -88, lat = 36.1980, zoom = 6) %>% 
             # Add tiles as baseGroup
        addProviderTiles(providers$CartoDB.DarkMatter) %>%
-          #  addPolygons(data=counties1,  color = "black", weight = 0.1,
-           #            opacity = 1.0, fillOpacity = 0.15, fillColor = "transparent",
-            #             group= "counties"
-             #        ) %>% 
-            addPolygons(data=states,  color = "black", weight = 0.1,
-                        opacity = 1.0, fillOpacity = 0.15, fillColor = "transparent",
-                        group= "states"
-            ) %>% 
+            addPolygons(data=counties1,  
+                        color = "black", 
+                        weight = 0.1,
+                        opacity = 1.0, 
+                        fillOpacity = 0.15, 
+                        fillColor = "transparent",
+                        group= "counties",
+                        popup = popupGraph("plot"),
+                        layerId = ~counties1$GEOID,
+                   ) %>% 
+           # addPolygons(data=states, 
+            #            color = "black",
+             #           weight = 0.1,
+              #          opacity = 1.0, 
+               #         fillOpacity = 0.15, 
+                #        fillColor = "transparent",
+                 #       group= "states"
+         #   ) %>% 
             
         #     Layers control
             addLayersControl( baseGroups = c("TonerLite"),
                 overlayGroups = c(
-                #  "counties", 
-                  "states"),
+                  "counties"
+               #   "states"),
+                ),
                 options = layersControlOptions(collapsed = FALSE) ) 
         
         
@@ -125,18 +139,18 @@ observeEvent(
          zoom = 16.25)
    })
    
-   #    srow <- All[All$name == input$name,]
+
  
-############### CLICK ON MAP FUNCTION TO ZOOM 
+############### CLICK ON MAP FUNCTION TO GET JHU COVID DATA LINKED TO COUNTIES
    observe({
      click <- input$map_shape_click
      if(is.null(click))
        return()   
-     idx <- ct_shp[as.character(ct_shp$GEOID) == click$id,]
-     #idx <- ct_shp[as.character(ct_shp$GEOID) == "21111",]
+     idx <- counties1[as.character(counties1$GEOID) == click$id,]
+   #  idx <- counties1[as.character(counties1$GEOID) == "21111",]
      print(idx)
      idd <- us_confirmed_long_jhu[as.character(us_confirmed_long_jhu$FIPS) == click$id,]
-     #idd <- us_confirmed_long_jhu[as.character(us_confirmed_long_jhu$FIPS) == "21111",]
+  #   idd <- us_confirmed_long_jhu[as.character(us_confirmed_long_jhu$FIPS) == "21111",]
      head(idd)
      print(as.numeric(idd[,12:ncol(idd)]))
      
@@ -149,19 +163,21 @@ observeEvent(
    })
 
    
-########### CLICK ON MAP TO GET COVID DATA      
-   randomVals <- eventReactive(input$go, {
+########### CLICK ON MAP TO GET COVID DATA    
+   ##?? a little confused with what this piece of code does  
+   
+   randomVals <- eventReactive(input$plot, {
      click <- input$map_shape_click
      idd <- us_confirmed_long_jhu[as.character(us_confirmed_long_jhu$FIPS) == click$id,  ] 
      idd
-     #as.numeric(idd)
-     # as.numeric(idd[,c(12:ncol(idd))])
-     #c(2,3,4,4,5,6,4,3,2,3,4,4,5,5,2,4)
+     as.numeric(idd)
+      as.numeric(idd[,c(12:ncol(idd))])
+   c(2,3,4,4,5,6,4,3,2,3,4,4,5,5,2,4)
    })
 
 ########### RENDER GRAPH     
    output$plot <- renderPlot({
-     #plot(randomVals())
+     plot(randomVals())
      idd <- randomVals()
      plot(as.numeric(idd[,12:ncol(idd)]),
           main=paste(idd$Admin2,
@@ -170,18 +186,17 @@ observeEvent(
                      sep=", ") 
      )
      
-     
    })
    
 ############ DOWNLOAD GRAPH   
-   observeEvent(input$go, {
-     showModal(modalDialog(
-       plotOutput("plot"),
-       footer = NULL,
-       easyClose = T,
-       downloadButton('downloadPlot', 'Download')
-     ))
-   })
+  # observeEvent(input$go, {
+   #  showModal(modalDialog(
+    #   plotOutput("plot"),
+     #  footer = NULL,
+      # easyClose = T,
+    #  downloadButton('downloadPlot', 'Download')
+    # ))
+   #})
       
 }
 ########################################################################################
