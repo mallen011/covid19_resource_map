@@ -14,7 +14,8 @@ path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
-################POLYGONS
+
+## load files, which have been cleaned and organized for this app:
 source("C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
 
 ##################################### UI ###############################################
