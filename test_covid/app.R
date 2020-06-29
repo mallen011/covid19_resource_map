@@ -16,14 +16,14 @@ library(extrafont)
 
 
 ## SET PATH ##
-path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
 
 
 ## load files, which have been cleaned and organized for this app:
-source("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
+source("C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
 
 
 ##################################### UI ###############################################
