@@ -14,11 +14,13 @@ library(dplyr)
 
 
 ## SET PATH ##
-path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
 ################POLYGONS
+poverty <- read.csv("US_counties_poverty.csv")
+poverty <-data.frame(poverty)
 
 counties <- readOGR("shps/us_counties.shp")
 
@@ -28,12 +30,12 @@ counties1 <- data.frame(counties)
 counties1$STATE_NAME <- gsub("Alabama", "AL", counties1$STATE_NAME)
 counties1[["NAME"]] <- 
   with(counties1, ifelse(STATE_NAME == 'AL', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Arkansas", "AK", counties1$STATE_NAME)
+counties1$STATE_NAME <- gsub("Arkansas", "AR", counties1$STATE_NAME)
 counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'AK', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Arizona", "AR", counties1$STATE_NAME)
+  with(counties1, ifelse(STATE_NAME == 'AR', paste0(NAME, "-", STATE_NAME), NAME))
+counties1$STATE_NAME <- gsub("Arizona", "AZ", counties1$STATE_NAME)
 counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'Arizona', paste0(NAME, "-", STATE_NAME), NAME))
+  with(counties1, ifelse(STATE_NAME == 'AZ', paste0(NAME, "-", STATE_NAME), NAME))
 counties1$STATE_NAME <- gsub("California", "CA", counties1$STATE_NAME)
 counties1[["NAME"]] <- 
   with(counties1, ifelse(STATE_NAME == 'CA', paste0(NAME, "-", STATE_NAME), NAME))
@@ -160,9 +162,11 @@ counties1[["NAME"]] <-
 counties1$STATE_NAME <- gsub("Washington", "WA", counties1$STATE_NAME)
 counties1[["NAME"]] <- 
   with(counties1, ifelse(STATE_NAME == 'WA', paste0(NAME, "-", STATE_NAME), NAME))
+counties1$NAME <-gsub("District of Columbia", "Washington", counties1$NAME)
+counties1$STATE_NAME <- gsub("WA, DC", "DC", counties1$STATE_NAME)
 counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'Washington, D.C.', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("West Virginia", "WV", counties1$STATE_NAME)
+  with(counties1, ifelse(STATE_NAME == 'DC', paste0(NAME, "-", STATE_NAME), NAME))
+counties1$STATE_NAME <- gsub("West VA", "WV", counties1$STATE_NAME)
 counties1[["NAME"]] <- 
   with(counties1, ifelse(STATE_NAME == 'WV', paste0(NAME, "-", STATE_NAME), NAME))
 counties1$STATE_NAME <- gsub("Wisconsin", "WI", counties1$STATE_NAME)
@@ -174,9 +178,22 @@ counties1[["NAME"]] <-
 #counties <- read.csv("us_counties1.csv")
 
 
+##join poverty to county polyons
+counties1 <- merge(poverty, counties1, by=c("NAME"))
+
+##get rid of additional columns made from the merge
+counties1 <- subset(counties1, select = -c(STATE_NAME.y, STATEFP, COUNTYFP, NAMELSAD) )
+
+##make poverty data into character
+counties1$All.Ages.in.Poverty.Percent<- as.character(counties1$All.Ages.in.Poverty.Percent)
+
+
+
+
 ################COVID19 DATA
 ## County Level data covid
-us_confirmed_long_jhu <- read.csv(file="updates/coviddata.csv")
+us_confirmed_long_jhu <- read.csv(file="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv")
+
 
 #only use necessary columns (take out the rest)
 us_confirmed_long_jhu = subset(us_confirmed_long_jhu, select = -c(iso2, iso3, code3, Country_Region, UID) )
@@ -215,12 +232,12 @@ df$date<- as.Date(as.character(df$date), format = "%m/%d/%y")
 df$Province_State <- gsub("Alabama", "AL", df$Province_State)
 df[["Admin2"]] <- 
   with(df, ifelse(Province_State == 'AL', paste0(Admin2, "-", Province_State), Admin2))
-df$Province_State <- gsub("Arkansas", "AK", df$Province_State)
+df$Province_State <- gsub("Arkansas", "AR", df$Province_State)
 df[["Admin2"]] <- 
-  with(df, ifelse(Province_State == 'AK', paste0(Admin2, "-", Province_State), Admin2))
-df$Province_State <- gsub("Arizona", "AR", df$Province_State)
+  with(df, ifelse(Province_State == 'AR', paste0(Admin2, "-", Province_State), Admin2))
+df$Province_State <- gsub("Arizona", "AZ", df$Province_State)
 df[["Admin2"]] <- 
-  with(df, ifelse(Province_State == 'Arizona', paste0(Admin2, "-", Province_State), Admin2))
+  with(df, ifelse(Province_State == 'AZ', paste0(Admin2, "-", Province_State), Admin2))
 df$Province_State <- gsub("California", "CA", df$Province_State)
 df[["Admin2"]] <- 
   with(df, ifelse(Province_State == 'CA', paste0(Admin2, "-", Province_State), Admin2))
@@ -347,8 +364,10 @@ df[["Admin2"]] <-
 df$Province_State <- gsub("Washington", "WA", df$Province_State)
 df[["Admin2"]] <- 
   with(df, ifelse(Province_State == 'WA', paste0(Admin2, "-", Province_State), Admin2))
+df$Province_State <- gsub("District of Columbia", "DC", df$Province_State)
+df$Admin2 <-gsub("District of Columbia", "Washington", df$Admin2)
 df[["Admin2"]] <- 
-  with(df, ifelse(Province_State == 'Washington, D.C.', paste0(Admin2, "-", Province_State), Admin2))
+  with(df, ifelse(Province_State == 'DC', paste0(Admin2, "-", Province_State), Admin2))
 df$Province_State <- gsub("West Virginia", "WV", df$Province_State)
 df[["Admin2"]] <- 
   with(df, ifelse(Province_State == 'WV', paste0(Admin2, "-", Province_State), Admin2))
@@ -359,5 +378,5 @@ df$Province_State <- gsub("Wyoming", "WY", df$Province_State)
 df[["Admin2"]] <- 
   with(df, ifelse(Province_State == 'WY', paste0(Admin2, "-", Province_State), Admin2))
 
-#convert value from int to num to plot?
+#convert value from int to num to plot
 df$value <-as.numeric(df$value)
