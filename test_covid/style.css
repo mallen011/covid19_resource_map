@@ -102,3 +102,20 @@ input[type="number"] {
     border-width: thin;
     border-color: #ec9d26;
 }
+
+/*modal dialogue box 
+.modal dialog{
+  width: 800px;
+  height: 600px;
+  background-color: #262626;
+  opacity: 0.80;
+  font-family: 'Source Code Pro', monospace;
+  color: white;
+  font-size: 17px;
+  position: absolute;
+  right: 10px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #ec9d26;
+}
+*/
