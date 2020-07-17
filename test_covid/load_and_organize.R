@@ -18,14 +18,14 @@ path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
-################POLYGONS
 
+#POVERTY
 poverty <- read.csv("US_counties_poverty.csv")
 poverty <-data.frame(poverty)
 
 #industry <- read.csv("US_IND.csv")
 
-
+#COUNTIES
 counties <- readOGR("shps/us_counties.shp")
 
 counties1 <- data.frame(counties)
