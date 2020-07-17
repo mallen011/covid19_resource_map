@@ -4,16 +4,22 @@ library(shinydashboard)
 library(leafpop)
 library(sf)
 library(tidyverse)
-library(extrafont)
-#font_import()
-#loadfonts(device = "win")
+library(waffle)
+#library(extrafont)
+#library(emojifont)
+#library(hrbrthemes)
+#library(magrittr)
+#extrafont::font_import (path="C:/Users/Clown Baby/Desktop", pattern = "awesome", prompt = FALSE)
+#extrafont::loadfonts(quiet = TRUE)
 
-##sources for help
-#     https://stackoverflow.com/questions/21515800/subset-a-data-frame-based-on-user-input-shiny
-#     https://stackoverflow.com/questions/51407721/shiny-r-error-in-data-must-be-a-data-frame-or-other-object-coercible-by
-#     https://stackoverflow.com/questions/45283345/how-to-use-select-input-to-subset-a-dataframe-in-r-shiny
-#     https://stackoverflow.com/questions/37163996/selectinput-and-plot-render
-
+## TO DO
+#1. Make download action button operational
+#2. Stylize modalDialogue
+##3.  There's an issue with click reactive function, not getting the correct
+## plot for county polygon clicked.
+#4. add waffle and bar plot to clicked modal dialogue
+#5. fonts in plot
+#6. add demographic data, land use data, employment data
 
 ## SET PATH ##
 path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
@@ -23,7 +29,7 @@ setwd(path)
 
 
 ## load files, which have been cleaned and organized for this app:
-source("C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
+source("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
 
 
 ##################################### UI ###############################################
@@ -32,26 +38,20 @@ ui <- dashboardPage(
     dashboardSidebar(
         selectInput("selectstate", "Select State", unique(df$Province_State)),
         selectInput("selectcounty", "Select County", choices = NULL),
-      #  actionButton("plot1", "plot"),
         actionButton("zoom2location","Take me there")
-    #    actionButton("go","Plot Data")
     ),
     dashboardBody( 
         tags$head(
         includeCSS("style.css"),
         includeCSS("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Code+Pro:wght@200&display=swap") ),
         tags$style(type = "text/css", "#map {height: calc(100vh - 80px) !important;}"),
-        leafletOutput("map"),
-        absolutePanel (id = "controls1", class = "panel panel-default", draggable = TRUE, fixed = FALSE, top = 300, left = "auto", right = 22, bottom = "auto", height = "auto",
-                       plotOutput("plot"),
-                       textOutput("us_county_poverty")
-                      )
+        leafletOutput("map")
     )
 )
 ##################################### SERVER ###########################################
 server <- function(session, input, output) {
   
-########### SELECT STATES AND COUNTIES FUNCTIONS  
+########### SELECT STATES AND COUNTIES FUNCTIONS IN SELECTINPUT###### 
 observeEvent(
   input$selectstate,
   updateSelectInput(session,"selectcounty", "Select County", 
@@ -59,7 +59,7 @@ observeEvent(
 )
 
  
-############## ZOOM 2 LOCATION BUTTON
+############## ZOOM 2 LOCATION BUTTON ACTIONBUTTON ################
    observeEvent(input$zoom2location, {
      srow <- counties1[counties1$NAME==input$selectcounty,]
      leafletProxy("map")   %>%
@@ -68,18 +68,40 @@ observeEvent(
          lng = srow$INTPTLON,
          zoom = 16.25)
    })
- 
+
    
-#### subset counties chosen in select input to display plot ##  
+######################## PLOT BY SELECT INPUT ####################
+####1.  subset counties chosen in select input to display plot ##  
    subset_county<- reactive({
      dplyr::filter(df, df$Admin2==input$selectcounty)
    })
-      
-##render plot when select county 
 
+ 
+ ##2. observe event, render modal dialogue for select input  
+     observeEvent(input$selectcounty, {
+     click <- input$selectcounty
+     if(is.null(click))
+       return() 
+     {showModal(modalDialog(
+       title = subset_county()$NAME,
+       footer = NULL,
+       easyClose = T,
+       div("Coronovirus", plotOutput("plot")),
+     #  textOutput("us_county_poverty"),
+       div("Demographics", plotOutput("waffle")),
+       div("Economy", plotOutput("industry")),
+       downloadButton('downloadPlot', 'Download')
+     ))
+       }
+   }) 
+
+##3. render plot when select county 
     output$plot <-renderPlot(
-     ggplot(data= subset_county(), 
-                   aes(x= date, y = value)) + geom_line(color = "#2E9AFE", size = 1) + geom_area(fill="#3ba1ff") + ggtitle("Cases of Coronovirus") + theme(
+    ggplot(data= subset_county(), 
+                   aes(x= date, y = value)) + geom_line(color = "#2E9AFE", size = 1) + 
+      geom_area(fill="#3ba1ff") + 
+      ggtitle("Coronavirus in ", as.character(subset_county()$Admin2)) +
+      theme(
                      panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(),
                      panel.border = element_blank(),
@@ -90,25 +112,56 @@ observeEvent(
                      axis.line.y = element_line(color = "grey"),
                      plot.title = element_text(color = 'white'),
                      axis.title = element_text(color = 'white'),
-                     text = element_text(family = 'Courier New', size = 20)
-                   )
+                   #  text = element_text(family = 'Courier New', size = 20)
+                  )
    )
 
-####show county poverty in textOutput below plot
-##filter data based on selectcounty input 
-    subset_county_poverty <-reactive({
-      counties1 %>% filter(NAME==input$selectcounty)
+########### SHOW WAFFLE PLOT WHEN SELECT INPUT ############  
+    ## 1. First, I need to successfully subset the data through selectInput
+    ## Make sure you're using the numeric values of poverty, not character
+     subset_county_poverty2 <-reactive({
+       subset(counties1, NAME==input$selectcounty)
+    })
+
+ 
+    ## 2. Next, display subsetted data in the plot
+    output$waffle <- renderPlot({
+    waffle(c("At or below poverty line" = subset_county_poverty2()$All.Ages.in.Poverty.Percent,
+             "Above poverty line" = subset_county_poverty2()$not_pov), 
+               rows = 10, 
+     #      use_glyph = "male", 
+              glyph_size = 9,
+              colors = c("#2E9AFE", "#c4d6e5", "#c4d6e5"), 
+              xlab = "One square = 1% of total population <br> Source: SAIPE (2018)",
+              flip = TRUE) +
+        ggtitle("Poverty in ", as.character(subset_county_poverty2()$NAME)) 
+
+})
+  
+    
+#### BAR GRAPH OF SELECT INPUT COUNTY INDUSTRY ###
+    # 1. make sure it's in modal box
+    #2. subset data
+    subset_county_industry<- reactive({
+      dplyr::filter(industry, industry$NAME==input$selectcounty)
     })
     
-##Render text based on reactive filtering function for column "All.Ages.in.Poverty.Percent"
-    output$us_county_poverty <- renderText({
-      paste0("Percentage of county in poverty (2018): ", subset_county_poverty()$All.Ages.in.Poverty.Percent, "%")
-    }) 
-    
+    #3. render plot
+    output$industry <- renderPlot({
+      ggplot(data = subset_county_industry(), aes(type, count)) + 
+        ggtitle("Industry in ", subset_county_industry()$NAME) +
+        geom_bar(stat='identity') +
+        theme(axis.text.x = element_text(angle = 90, vjust = 0.4),
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.border = element_blank(),
+              ) +
+        xlab("Industry") + ylab("Employment count")
+    })
   
-############ DISPLAY MAP  
+###################### DISPLAY MAP##########################
+    
    output$map <- renderLeaflet({
-     
      leaflet() %>%
        setView(lng = -88, lat = 36.1980, zoom = 6) %>% 
        addProviderTiles(providers$CartoDB.DarkMatter) %>%
@@ -127,11 +180,79 @@ observeEvent(
                            #   "states"),
                          ),
                          options = layersControlOptions(collapsed = FALSE) ) 
-     
-     
    })
 
-      
+################### DISPLAY DATA BY CLICKING ON MAP ##################   
+##1.  subset counties by click function to plot the graph from below.
+subset_county_by_click <- reactive({
+  click <- input$map_shape_click
+  click <- counties1[as.character(counties1$GEOID) == click$id,]
+  dplyr::filter(df, df$Admin2==click$NAME)
+})
+
+
+##2. plotting by clicking on polygon instead
+   output$plot1 <-renderPlot(
+     ggplot(data= subset_county_by_click(), 
+            aes(x= date, y = value)) + geom_line(color = "#2E9AFE", size = 1) + geom_area(fill="#3ba1ff") + ggtitle("Coronavirus in ", as.character(subset_county_by_click()$Admin2)) + theme(
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              plot.background=element_rect(fill = '#262626'),
+              panel.background = element_rect(fill = '#262626'),
+              axis.text = element_text(color = 'white'),
+              axis.line.x = element_line(color = "grey"),
+              axis.line.y = element_line(color = "grey"),
+              plot.title = element_text(color = 'white'),
+              axis.title = element_text(color = 'white'),
+              text = element_text(family = 'Courier New', size = 20)
+            )
+   )
+ 
+### 3. When click on county on map, the a modal dialogue with county plot
+#####  and profile show up.
+   observeEvent(input$map_shape_click, {
+     click <- input$map_shape_click
+     if(is.null(click))
+       return() 
+       { showModal(modalDialog(
+         plotOutput("plot1"),
+         footer = NULL,
+         easyClose = T,
+         plotOutput("waffle2"),
+         downloadButton('downloadPlot', 'Download')
+        # textOutput("us_county_poverty1")
+       ))
+       }
+   })
+   
+##4. subset county poverty  in modal dialogue by click
+   subset_county_poverty1 <-reactive({
+     click <- input$map_shape_click
+     click <- counties1[as.character(counties1$GEOID) == click$id,]
+     dplyr::filter(counties1, counties1$NAME==click$NAME)
+   })
+   
+##5. render text in modal dialogue based on click
+ #  output$us_county_poverty1 <- renderText({
+  #   paste0("Percentage of county in poverty (2018): ", subset_county_poverty1()$All.Ages.in.Poverty.Percent, "%")
+   #}) 
+   
+   output$waffle2 <- renderPlot({
+     waffle(c("At or below poverty line" = subset_county_poverty1()$All.Ages.in.Poverty.Percent,
+              "Above poverty line" = subset_county_poverty1()$not_pov), 
+            rows = 10, 
+            #       glyph_font = "Font Awesome 5 Free Solid",
+            #      glyph_font_family = "FontAwesome5Free-Solid",
+            #      use_glyph = "male", 
+            glyph_size = 9,
+            colors = c("#2E9AFE", "#c4d6e5", "#c4d6e5"), 
+            xlab = "One square = 1% of total population <br> Source: SAIPE (2018)",
+            flip = TRUE) +
+       ggtitle("Poverty in ", as.character(subset_county_poverty1()$NAME))
+   })
+     
 }
+
 ########################################################################################
 shinyApp(ui = ui, server = server)
