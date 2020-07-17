@@ -253,8 +253,6 @@ counties1["charnot_pov"]<-charnot_pov <- as.character(counties1$not_pov)
 #us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Wisconsin', '-WI')
 #us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Wyoming', '-WY')
 
-#download to edit
-#new.US_industry <- write.csv(us_industry,"C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/new.US_industry", row.names = FALSE)
 
 ## pivot the industry data longer so can make a bar graph
 #industry <- industry %>% 
@@ -265,16 +263,8 @@ industry <- read.csv("US_IND.csv")
 industry <- data.frame(industry)
 
 
-#### MERGE INDUSTRY FILES + counties1
 
-#counties1 <- merge(counties1, industry, by=c("NAME"))
-#counties1 <- writeOGR(counties1, "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/counties1.shp", driver="ESRI Shapefile")
-
-##get rid of additional columns made from the merge
-#counties1 <- subset(counties1, select = -c(GEOID.y) )
-
-
-################COVID19 DATA
+################COVID19 DATA################
 ## County Level data covid
 us_confirmed_long_jhu <- read.csv(file="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv")
 
