@@ -14,13 +14,17 @@ library(dplyr)
 
 
 ## SET PATH ##
-path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
 ################POLYGONS
+
 poverty <- read.csv("US_counties_poverty.csv")
 poverty <-data.frame(poverty)
+
+#industry <- read.csv("US_IND.csv")
+
 
 counties <- readOGR("shps/us_counties.shp")
 
@@ -175,7 +179,6 @@ counties1[["NAME"]] <-
 counties1$STATE_NAME <- gsub("Wyoming", "WY", counties1$STATE_NAME)
 counties1[["NAME"]] <- 
   with(counties1, ifelse(STATE_NAME == 'WY', paste0(NAME, "-", STATE_NAME), NAME))
-#counties <- read.csv("us_counties1.csv")
 
 
 ##join poverty to county polyons
@@ -184,16 +187,96 @@ counties1 <- merge(poverty, counties1, by=c("NAME"))
 ##get rid of additional columns made from the merge
 counties1 <- subset(counties1, select = -c(STATE_NAME.y, STATEFP, COUNTYFP, NAMELSAD) )
 
-##make poverty data into character
-counties1$All.Ages.in.Poverty.Percent<- as.character(counties1$All.Ages.in.Poverty.Percent)
+
+##make poverty data into character, by first creating a new column and inserting poverty
+## as character, as to keep the original poverty data as numeric
+counties1["charpov"] <- char_poverty<- as.character(counties1$All.Ages.in.Poverty.Percent)
+
+counties1["not_pov"] <-(100-counties1$All.Ages.in.Poverty.Percent)
+
+counties1["charnot_pov"]<-charnot_pov <- as.character(counties1$not_pov)
 
 
+########################### INDUSTRY EDITS ########################
+#library(stringr)
+
+#us_industry <- read.csv("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/US_industry/us_industry.csv")
+#data.frame(us_industry)
+#us_industry <-select(us_industry, -contains("Margin"))
+#us_industry <-select(us_industry, -contains("Male"))
+#us_industry <-select(us_industry, -contains("Female"))
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Alabama', '-AL')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Arizona', '-AZ')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Arkansas', '-AR')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, California', '-CA')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Colorado', '-CO')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Connecticut', '-CT')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Delaware', '-DE')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Florida', '-FL')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Georgia', '-GA')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Iowa', '-IA')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Illinois', '-IL')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Indiana', '-IN')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Idaho', '-ID')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Kansas', '-KS')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Kentucky', '-KY')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Louisiana', '-LA')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Maryland', '-MD')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Maine', '-ME')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Massachussetts', '-MA')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Michigan', '-MI')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Mississippi', '-MS')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Missouri', '-MO')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Montana', '-MT')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Nebraska', '-NE')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Nevada', '-NV')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, North Dakota', '-ND')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, North Carolina', '-NC')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, New Jersey', '-NJ')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, New York', '-NY')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, New Hampshire', '-NH')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, New Mexico', '-NM')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Ohio', '-OH')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Oklahoma', '-OK')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Oregon', '-OR')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Pennsylvania', '-PA')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Rhode Island', '-RI')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, South Dakota', '-SD')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, South Carolina', '-SC')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Tennessee', '-TN')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Texas', '-TX')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Utah', '-UT')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Virginia', '-VA')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Vermont', '-VT')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Washington', '-AL')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, West Virginia', '-WV')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Wisconsin', '-WI')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Wyoming', '-WY')
+
+#download to edit
+#new.US_industry <- write.csv(us_industry,"C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/new.US_industry", row.names = FALSE)
+
+## pivot the industry data longer so can make a bar graph
+#industry <- industry %>% 
+# pivot_longer(-c(NAME, GEOID), names_to = "type", values_to = "count") 
+#industry$count <- as.numeric(industry$count)
+#industry <- write.csv(industry, "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/US_IND.csv", row.names = FALSE)
+industry <- read.csv("US_IND.csv")
+industry <- data.frame(industry)
+
+
+#### MERGE INDUSTRY FILES + counties1
+
+#counties1 <- merge(counties1, industry, by=c("NAME"))
+#counties1 <- writeOGR(counties1, "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/counties1.shp", driver="ESRI Shapefile")
+
+##get rid of additional columns made from the merge
+#counties1 <- subset(counties1, select = -c(GEOID.y) )
 
 
 ################COVID19 DATA
 ## County Level data covid
 us_confirmed_long_jhu <- read.csv(file="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv")
-
 
 #only use necessary columns (take out the rest)
 us_confirmed_long_jhu = subset(us_confirmed_long_jhu, select = -c(iso2, iso3, code3, Country_Region, UID) )
