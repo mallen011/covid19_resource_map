@@ -17,9 +17,12 @@ library(waffle)
 #2. Stylize modalDialogue
 ##3.  There's an issue with click reactive function, not getting the correct
 ## plot for county polygon clicked.
-#4. add waffle and ar plot to clicked modal dialogue
-#5. fonts in plot
-#6. add demographic data, land use data, employment data
+#4. fix circlepackeR graph for click input modal dialog
+#5. fonts in plot don't work
+#6. add land use data
+#7. Change industry bar plot so it's cooler --- maybe slope plot? or horizontal dots from this:
+### http://www.rebeccabarter.com/blog/2018-05-29_getting_fancy_ggplot2/
+
 
 ## SET PATH ##
 path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
