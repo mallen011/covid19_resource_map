@@ -24,19 +24,29 @@ library(waffle)
 ## maybe: https://www.nhgis.org/user-resources/environmental-summaries#download
 #8. Add operational "sources" button link
 #9. Add operational github code button link
+#10. Add operational workflow diagram button link
+#11. In each tab of modal dialogue, explain how demographic, economic data MAY influence 
+#### the spread of the coronovirus and create public health issues.
 
 ## SET PATH ##
 path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
-################################# LOADING DATA #########################################
-
+################################# READ DATA #########################################
 
 ## load files, which have been cleaned and organized for this app:
 source("C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
 
+# demographics source - 
 # https://www2.census.gov/programs-surveys/popest/technical-documentation/file-layouts/2010-2019/cc-est2019-alldata.pdf
 
+# covid source - 
+
+# counties polyons source - 
+
+# poverty source - 
+
+# industry source - 
 
 ##################################### UI ###############################################
 ui <- dashboardPage(
@@ -56,16 +66,15 @@ ui <- dashboardPage(
 )
 ##################################### SERVER ###########################################
 server <- function(session, input, output) {
-  
-########### SELECT STATES AND COUNTIES FUNCTIONS IN SELECTINPUT###### 
+
+    
+##### select counties by UI input$selectstate
 observeEvent(
   input$selectstate,
   updateSelectInput(session,"selectcounty", "Select County", 
                     choices = unique(df$Admin2[df$Province_State==input$selectstate]))
 )
-
- 
-############## ZOOM 2 LOCATION BUTTON ACTIONBUTTON ################
+##### zoom to selected county
    observeEvent(input$zoom2location, {
      srow <- counties1[counties1$NAME==input$selectcounty,]
      leafletProxy("map")   %>%
@@ -78,7 +87,8 @@ observeEvent(
    
 ######################## SELECT INPUT ####################
 
- #######observe event, render modal dialogue for select input  #######
+  
+####### Render Modal Dialogue Box #######
      observeEvent(input$selectcounty, {
      click <- input$selectcounty
      if(is.null(click))
@@ -89,22 +99,39 @@ observeEvent(
        easyClose = T,
        downloadButton('downloadPlot', 'Download'),
        tabsetPanel(type = "tabs",
-         tabPanel("Coronovirus", plotOutput("plot"),textOutput("death")),
-         tabPanel("Demographics", plotOutput("waffle"), circlepackeROutput(outputId = "race1", width = "100%", height = "400px")),
-         tabPanel("Economics", plotOutput("industry"), plotOutput("gender_industry"))
-         )#,
+         tabPanel("Coronovirus", 
+                  textOutput("covid_text"), 
+                  plotOutput("plot"),
+                  textOutput("death")),
+         tabPanel("Demographics", 
+                  textOutput("pov_text"),
+                  plotOutput("waffle"),
+                  textOutput("race_text"),
+                  circlepackeROutput(outputId = "race1", 
+                                     width = "100%", 
+                                     height = "400px")),
+         tabPanel("Economics", 
+                  textOutput("ind_text"),
+                  plotOutput("industry"),
+                  textOutput("gend_text"),
+                  plotOutput("gender_industry"))
+         )
      ))
        }
    }) 
 
   
-##### CORONOVIRUS PLOT #######  
-####1.  subset counties chosen in select input to display plot ##  
+###########CORONOVIRUS TAB###############
+  
+##output text, explaining what the graph is all about  
+output$covid_text <- renderText({"What does this graph show?"})
+
+##### covid plot
+##1.  subset counties chosen in select input to display plot ##  
   subset_county<- reactive({
     dplyr::filter(df, df$Admin2==input$selectcounty)
   })  
-  
-##2. render Coronovirus plot when select county 
+##2. render plot when select county 
     output$plot <-renderPlot(
     ggplot(data= subset_county(), 
                    aes(x= date, y = value)) + geom_line(color = "#2E9AFE", size = 1) + 
@@ -125,26 +152,28 @@ observeEvent(
                   )
    )
 
-########## text output deaths covid #####
-###1.  subset 
+#### text output deaths covid 
+##1.  subset 
     subset_death <- reactive ({
       dplyr::filter(death, death$Admin2==input$selectcounty)
     })
-#####2.  show deaths per county
+##2.  show deaths per county
     output$death <- renderText({
       paste0(prettyNum(sum(subset_death()[,ncol(death)]), big.mark=","), " deaths")
     })
     
+###########DEMOGRAPHICS TAB###############  
     
-########### SHOW WAFFLE PLOT WHEN SELECT INPUT ############  
-    ## 1. First, I need to successfully subset the data through selectInput
-    ## Make sure you're using the numeric values of poverty, not character
+##output text, explaining what the graph is all about   
+output$pov_text <- renderText({"What does the poverty graph show? How is poverty linked to spread of covid?"})        
+    
+#### Poverty waffle  
+## 1. First, I need to successfully subset the data through selectInput
+## Make sure you're using the numeric values of poverty, not character
      subset_county_poverty2 <-reactive({
        subset(counties1, NAME==input$selectcounty)
     })
-
- 
-    ## 2. Next, display subsetted data in the plot
+## 2. Next, display subsetted data in the plot
     output$waffle <- renderPlot({
     waffle(c("At or below poverty line" = subset_county_poverty2()$All.Ages.in.Poverty.Percent,
              "Above poverty line" = subset_county_poverty2()$not_pov), 
@@ -159,16 +188,40 @@ observeEvent(
         ggtitle("Poverty in ", as.character(subset_county_poverty2()$NAME)) 
 
 })
-  
+
+##output text, explaining what the graph is all about       
+output$race_text <- renderText({"What does the demographics graph show? How is race linked to spread of covid?"})        
     
-#### BAR GRAPH OF SELECT INPUT COUNTY INDUSTRY ###
-    # 1. make sure it's in modal box
-    #2. subset data
+###### Racial makeup circlepackeR graph
+## 1. make sure it's in modal box
+## 2. subset data
+    race_filter <- reactive({
+      req(input$selectcounty)
+      subset.data.frame(race, NAME==input$selectcounty)
+    })
+## 3. Subset nodes to put in graph
+    race_node <- reactive({
+      as.Node(race_filter())
+    })
+## 4. Display circlepackeR graph
+    output$race1 <- renderCirclepackeR({
+      circlepackeR(race_node(), size = "r_count", 
+                   color_max = "hsl(228, 95%, 57%)",
+                   color_min = "hsl(228, 95%, 1%)")
+    })
+
+###########ECONOMICS TAB###############  
+    
+##output text, explaining what the graph is all about      
+output$ind_text <- renderText({"What does the industry graph show? How is industry linked to spread of covid?"})        
+  
+#### Industry bar graph
+## 1. make sure it's in modal box
+## 2. subset data
     subset_county_industry<- reactive({
       dplyr::filter(industry, industry$industry.us_industry.NAME==input$selectcounty)
     })  
-    
-    #3. render plot
+## 3. render plot
     output$industry <- renderPlot({
       ggplot(data = subset_county_industry(), aes(industry.Industry, industry.total)) + 
         ggtitle("Industry in ", subset_county_industry()$industry.us_industry.NAME) +
@@ -180,39 +233,25 @@ observeEvent(
               ) +
         xlab("Industry") + ylab("Employment count")
     })
-
-##### SLOPE PLOT FOR SELECT INPUT COUNTY INDUSTRY GENDER ####
-    ##### 1. make sure it's in modal dialog
-     ### 2. subset -- used subset_county_industry() reactive from above
     
-    ####3. display
+##### Gender/industry slope plot
+##output text, explaining what the graph is all about   
+output$gend_text <- renderText({"What does the industry/gender graph show? How is industry/gender linked to spread of covid?"})        
+    
+## 1. make sure it's in modal dialog
+## 2. subset -- used subset_county_industry() reactive from above
+## 3. display
     output$gender_industry<- renderPlot({
       ggplot(data = subset_county_industry(), aes(x = gender, y = percentage, group = industry.Industry)) + 
         geom_line(aes(color = industry.Industry, alpha = 1), size = 2) +
         geom_point(aes(color = industry.Industry, alpha = 1), size = 4) 
     })
+ 
     
-    
-###### CIRCLE TREE MAP OF SELECT INPUT #######
-   # 1. make sure it's in modal box
-    #2. subset data
-    race_filter <- reactive({
-      req(input$selectcounty)
-      subset.data.frame(race, NAME==input$selectcounty)
-    })
-    
-    race_node <- reactive({
-      as.Node(race_filter())
-    })
-    
-    #3. Display circlepackeR graph
-    output$race1 <- renderCirclepackeR({
-      circlepackeR(race_node(), size = "r_count", 
-                   color_max = "hsl(228, 95%, 57%)",
-                   color_min = "hsl(228, 95%, 1%)")
-    })   
-###################### DISPLAY MAP##########################
-    
+########################### CLICK MAP INPUT ##########################   
+  
+      
+###### Render map ######
    output$map <- renderLeaflet({
      leaflet() %>%
        setView(lng = -88, lat = 36.1980, zoom = 6) %>% 
@@ -234,16 +273,36 @@ observeEvent(
                          options = layersControlOptions(collapsed = FALSE) ) 
    })
 
-################### DISPLAY DATA BY CLICKING ON MAP ##################   
+####### Render Modal Dialogue Box #######
+    observeEvent(input$map_shape_click, {
+      click <- input$map_shape_click
+      if(is.null(click))
+        return() 
+      { showModal(modalDialog(
+        footer = NULL,
+        easyClose = T,
+        downloadButton('downloadPlot', 'Download'),
+        tabsetPanel(
+          tabPanel("Coronovirus", plotOutput("plot1")),
+          tabPanel("Demographics", plotOutput("waffle2"), circlepackeROutput(outputId = "race2", width = "100%", height = "400px")),
+          tabPanel("Economics", plotOutput("industry1")
+          )
+        )
+      ))
+        }
+    })
+
+        
+###########CORONOVIRUS TAB###############
+    
+##### Covid plot  
 ##1.  subset counties by click function to plot the graph from below.
 subset_county_by_click <- reactive({
   click <- input$map_shape_click
   click <- counties1[as.character(counties1$GEOID) == click$id,]
   dplyr::filter(df, df$Admin2==click$NAME)
 })
-
-
-##2. plotting by clicking on polygon instead
+##2. plotting by clicking on polygon
    output$plot1 <-renderPlot(
      ggplot(data= subset_county_by_click(), 
             aes(x= date, y = value)) + geom_line(color = "#2E9AFE", size = 1) + geom_area(fill="#3ba1ff") + ggtitle("Coronavirus in ", as.character(subset_county_by_click()$Admin2)) + theme(
@@ -261,35 +320,16 @@ subset_county_by_click <- reactive({
             )
    )
  
-
-### 3. When click on county on map, the a modal dialogue with county plot
-##  and profile show up.
-   observeEvent(input$map_shape_click, {
-     click <- input$map_shape_click
-     if(is.null(click))
-       return() 
-       { showModal(modalDialog(
-         footer = NULL,
-         easyClose = T,
-         downloadButton('downloadPlot', 'Download'),
-         tabsetPanel(
-           tabPanel("Coronovirus", plotOutput("plot1")),
-           tabPanel("Demographics", plotOutput("waffle2"), circlepackeROutput(outputId = "race2", width = "100%", height = "400px")),
-           tabPanel("Economics", plotOutput("industry1")
-         )
-         )
-       ))
-       }
-   })
+###########DEMOGRAPHICS TAB###############   
    
-##4. subset county poverty  in modal dialogue by click
+#### Poverty waffle
+## 1. subset county poverty in modal dialogue by click
    subset_county_poverty1 <-reactive({
      click <- input$map_shape_click
      click <- counties1[as.character(counties1$GEOID) == click$id,]
      dplyr::filter(counties1, counties1$NAME==click$NAME)
    })
-   
-##5. display waffle graph
+## 2. display waffle graph
    output$waffle2 <- renderPlot({
      waffle(c("At or below poverty line" = subset_county_poverty1()$All.Ages.in.Poverty.Percent,
               "Above poverty line" = subset_county_poverty1()$not_pov), 
@@ -303,18 +343,39 @@ subset_county_by_click <- reactive({
             flip = TRUE) +
        ggtitle("Poverty in ", as.character(subset_county_poverty1()$NAME))
    })
-
    
-######## Industry Bar Graph when click on map #######   
- #1. put in modal box
- #2. Subset based on click
+##### Racial Makeup circlepackeR 
+## 1. put in modal box
+## 2. Subset based on click
+   race_filter1 <- reactive({
+     click <- input$map_shape_click
+     click <- counties1[as.character(counties1$GEOID) == click$id,]
+     #  req(click$NAME)
+     dplyr::filter(race, race$NAME==click$NAME)
+   })
+## 3. create nodes based on subsetted values to display in circlepackeR
+   race_node1 <- reactive({
+     as.Node(race_filter1())
+   })
+## 4. Display circlepackeR graph
+   output$race2 <- renderCirclepackeR({
+     circlepackeR(race_node1(), size = "r_count", 
+                  color_max = "hsl(228, 95%, 57%)",
+                  color_min = "hsl(228, 95%, 1%)")
+   })  
+   
+
+###########ECONOMICS TAB###############     
+   
+##### Industry bar graph  
+## 1. put in modal box
+## 2. Subset based on click
    subset_county_industry1 <-reactive({
      click <- input$map_shape_click
      click <- counties1[as.character(counties1$GEOID) == click$id,]
      dplyr::filter(industry, industry$NAME==click$NAME)
    })
-   
- #3. display graph in modal box
+## 3. Render plot
    output$industry1 <- renderPlot({
      ggplot(data = subset_county_industry1(), aes(type, count)) + 
        ggtitle("Industry in ", subset_county_industry1()$NAME) +
@@ -327,32 +388,11 @@ subset_county_by_click <- reactive({
        xlab("Industry") + ylab("Employment count")
    })
    
-    
-######## demographics circlepackeR when click on map #######    
-  #1. put in modal box
-  #2. Subset based on click
-   race_filter1 <- reactive({
-     click <- input$map_shape_click
-     click <- counties1[as.character(counties1$GEOID) == click$id,]
-   #  req(click$NAME)
-     dplyr::filter(race, race$NAME==click$NAME)
-   })
-   
-   race_node1 <- reactive({
-     as.Node(race_filter1())
-   })
-   
-   #3. Display circlepackeR graph
-   output$race2 <- renderCirclepackeR({
-     circlepackeR(race_node1(), size = "r_count", 
-                  color_max = "hsl(228, 95%, 57%)",
-                  color_min = "hsl(228, 95%, 1%)")
-   })  
-   
-   
+#### Gender/Industry slope plot
+## 1. make sure it's in modal dialogue to display
+## 2. Subset based on click   
+## 3. Render plot   
       
 }
-
-
 ########################################################################################
 shinyApp(ui = ui, server = server)
