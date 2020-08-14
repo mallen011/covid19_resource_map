@@ -12,7 +12,7 @@ library(data.tree)
 library(circlepackeR) 
 
 ## SET PATH ##
-path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
