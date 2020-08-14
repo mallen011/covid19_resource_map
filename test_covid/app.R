@@ -17,12 +17,13 @@ library(waffle)
 #2. Stylize modalDialogue
 ##3.  There's an issue with click reactive function, not getting the correct
 ## plot for county polygon clicked.
-#4. fix circlepackeR graph for click input modal dialog
-#5. fonts in plot don't work
-#6. add land use data
-#7. Change industry bar plot so it's cooler --- maybe slope plot? or horizontal dots from this:
-### http://www.rebeccabarter.com/blog/2018-05-29_getting_fancy_ggplot2/
-
+#4. update modal dialog for click event
+#5. fonts in plot
+#6. add covid-19 deaths for counties (Coronovirus tab in modal dialog)
+#7. get land use/cover data for each county, visualize:
+## maybe: https://www.nhgis.org/user-resources/environmental-summaries#download
+#8. Add operational "sources" button link
+#9. Add operational github code button link
 
 ## SET PATH ##
 path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
@@ -34,7 +35,6 @@ setwd(path)
 ## load files, which have been cleaned and organized for this app:
 source("C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
 
-#https://www.r-graph-gallery.com/circle-packing.html
 # https://www2.census.gov/programs-surveys/popest/technical-documentation/file-layouts/2010-2019/cc-est2019-alldata.pdf
 
 
@@ -76,14 +76,9 @@ observeEvent(
    })
  
    
-######################## PLOT BY SELECT INPUT ####################
-####1.  subset counties chosen in select input to display plot ##  
-   subset_county<- reactive({
-     dplyr::filter(df, df$Admin2==input$selectcounty)
-   })
+######################## SELECT INPUT ####################
 
- 
- ##2. observe event, render modal dialogue for select input  
+ #######observe event, render modal dialogue for select input  #######
      observeEvent(input$selectcounty, {
      click <- input$selectcounty
      if(is.null(click))
@@ -94,15 +89,22 @@ observeEvent(
        easyClose = T,
        downloadButton('downloadPlot', 'Download'),
        tabsetPanel(type = "tabs",
-         tabPanel("Coronovirus", plotOutput("plot")),
+         tabPanel("Coronovirus", plotOutput("plot"),textOutput("death")),
          tabPanel("Demographics", plotOutput("waffle"), circlepackeROutput(outputId = "race1", width = "100%", height = "400px")),
-         tabPanel("Economics", plotOutput("industry"))
+         tabPanel("Economics", plotOutput("industry"), plotOutput("gender_industry"))
          )#,
      ))
        }
    }) 
 
-##3. render plot when select county 
+  
+##### CORONOVIRUS PLOT #######  
+####1.  subset counties chosen in select input to display plot ##  
+  subset_county<- reactive({
+    dplyr::filter(df, df$Admin2==input$selectcounty)
+  })  
+  
+##2. render Coronovirus plot when select county 
     output$plot <-renderPlot(
     ggplot(data= subset_county(), 
                    aes(x= date, y = value)) + geom_line(color = "#2E9AFE", size = 1) + 
@@ -123,6 +125,17 @@ observeEvent(
                   )
    )
 
+########## text output deaths covid #####
+###1.  subset 
+    subset_death <- reactive ({
+      dplyr::filter(death, death$Admin2==input$selectcounty)
+    })
+#####2.  show deaths per county
+    output$death <- renderText({
+      paste0(prettyNum(sum(subset_death()[,ncol(death)]), big.mark=","), " deaths")
+    })
+    
+    
 ########### SHOW WAFFLE PLOT WHEN SELECT INPUT ############  
     ## 1. First, I need to successfully subset the data through selectInput
     ## Make sure you're using the numeric values of poverty, not character
@@ -152,22 +165,34 @@ observeEvent(
     # 1. make sure it's in modal box
     #2. subset data
     subset_county_industry<- reactive({
-      dplyr::filter(industry, industry$NAME==input$selectcounty)
-    })
+      dplyr::filter(industry, industry$industry.us_industry.NAME==input$selectcounty)
+    })  
     
     #3. render plot
     output$industry <- renderPlot({
-      ggplot(data = subset_county_industry(), aes(type, count)) + 
-        ggtitle("Industry in ", subset_county_industry()$NAME) +
+      ggplot(data = subset_county_industry(), aes(industry.Industry, industry.total)) + 
+        ggtitle("Industry in ", subset_county_industry()$industry.us_industry.NAME) +
         geom_bar(stat='identity') +
         theme(axis.text.x = element_text(angle = 90, vjust = 0.4),
                 panel.grid.major = element_blank(),
                 panel.grid.minor = element_blank(),
-                panel.border = element_blank(),
+                panel.border = element_blank()
               ) +
         xlab("Industry") + ylab("Employment count")
     })
 
+##### SLOPE PLOT FOR SELECT INPUT COUNTY INDUSTRY GENDER ####
+    ##### 1. make sure it's in modal dialog
+     ### 2. subset -- used subset_county_industry() reactive from above
+    
+    ####3. display
+    output$gender_industry<- renderPlot({
+      ggplot(data = subset_county_industry(), aes(x = gender, y = percentage, group = industry.Industry)) + 
+        geom_line(aes(color = industry.Industry, alpha = 1), size = 2) +
+        geom_point(aes(color = industry.Industry, alpha = 1), size = 4) 
+    })
+    
+    
 ###### CIRCLE TREE MAP OF SELECT INPUT #######
    # 1. make sure it's in modal box
     #2. subset data
@@ -297,7 +322,7 @@ subset_county_by_click <- reactive({
        theme(axis.text.x = element_text(angle = 90, vjust = 0.4),
              panel.grid.major = element_blank(),
              panel.grid.minor = element_blank(),
-             panel.border = element_blank(),
+             panel.border = element_blank()
        ) +
        xlab("Industry") + ylab("Employment count")
    })
