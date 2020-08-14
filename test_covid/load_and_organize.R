@@ -12,10 +12,11 @@ library(data.tree)
 library(circlepackeR) 
 
 ## SET PATH ##
-path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
+################POLYGONS
 
 poverty <- read.csv("US_counties_poverty.csv")
 poverty <-data.frame(poverty)
@@ -195,9 +196,9 @@ counties1["charnot_pov"]<-charnot_pov <- as.character(counties1$not_pov)
 
 
 ########################### INDUSTRY EDITS ########################
-#library(stringr)
+library(stringr)
 
-#us_industry <- read.csv("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/US_industry/us_industry.csv")
+#us_industry <- read.csv("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/US_industry/us_industry1.csv")
 #data.frame(us_industry)
 #us_industry <-select(us_industry, -contains("Margin"))
 #us_industry <-select(us_industry, -contains("Male"))
@@ -213,8 +214,7 @@ counties1["charnot_pov"]<-charnot_pov <- as.character(counties1$not_pov)
 #us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Georgia', '-GA')
 #us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Iowa', '-IA')
 #us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Illinois', '-IL')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Indiana', '-IN')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Idaho', '-ID')
+#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Indiana', '-IN')#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Idaho', '-ID')
 #us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Kansas', '-KS')
 #us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Kentucky', '-KY')
 #us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Louisiana', '-LA')
@@ -256,9 +256,8 @@ counties1["charnot_pov"]<-charnot_pov <- as.character(counties1$not_pov)
 # pivot_longer(-c(NAME, GEOID), names_to = "type", values_to = "count") 
 #industry$count <- as.numeric(industry$count)
 #industry <- write.csv(industry, "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/US_IND.csv", row.names = FALSE)
-industry <- read.csv("US_IND.csv")
+industry <- read.csv("industry.csv")
 industry <- data.frame(industry)
-
 
 ###race###
 race <- read.csv("race.csv")
@@ -274,10 +273,13 @@ race$pathString <- paste("world", race$gender, race$hispanic, race$race, race$ma
 
 #https://www.census.gov/data/datasets/time-series/demo/popest/2010s-counties-detail.html
   
-################COVID19 DATA
+
+
+
+############################COVID19 DATA#############################
+
 ## County Level data covid
 us_confirmed_long_jhu <- read.csv(file="https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv")
-
 #only use necessary columns (take out the rest)
 us_confirmed_long_jhu = subset(us_confirmed_long_jhu, select = -c(iso2, iso3, code3, Country_Region, UID) )
 
@@ -463,3 +465,182 @@ df[["Admin2"]] <-
 
 #convert value from int to num to plot
 df$value <-as.numeric(df$value)
+
+
+
+### deaths
+
+death <- read.csv(file = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv")
+death  = subset(death, select = -c(iso2, iso3, code3, Country_Region, UID, Combined_Key) )
+death <-pivot_longer(death, starts_with("X"), names_to = "date")
+death <- data.frame(death)
+delete3 <- c("Alaska", "American Samoa", "Puerto Rico", "Virgin Islands", "Guam", "Hawaii", 
+             "Northern Mariana Islands", "Grand Princess", "Diamond Princess")
+death <- death[ !grepl(paste(delete3, collapse="|"), death$Province_State),]
+delete4 <- c("Unassigned", "Out of")
+death <- death[ !grepl(paste(delete4, collapse="|"), death$Admin2),]
+death$date <-substring(death$date,2)
+#Take out first row
+#death <- death[-c(1),]
+#replace all periods in "date" with forward slash
+death$date <- str_replace_all(death$date, '\\.', '/')
+#convert to standard
+death$date<- as.Date(as.character(death$date), format = "%m/%d/%y")
+
+death$Province_State <- gsub("Alabama", "AL", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'AL', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Arkansas", "AR", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'AR', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Arizona", "AZ", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'AZ', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("California", "CA", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'CA', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Colorado", "CO", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'CO', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Connecticut", "CT", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'CT', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Delaware", "DE", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'DE', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Florida", "FL", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'FL', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Georgia", "GA", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'GA', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Idaho", "ID", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'ID', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Illinois", "IL", death$Province_State)
+death[["Admin2"]]<- 
+  with(death, ifelse(Province_State == 'IL', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Indiana", "IN", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'IN', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Iowa", "IA", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'IA', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Kansas", "KS", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'KS', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Kentucky", "KY", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'KY', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Louisiana", "LA", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'LA', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Maine", "ME", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'ME', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Maryland", "MD", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'MD', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Massachusetts", "MA", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'MA', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Michigan", "MI", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'MI', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Minnesota", "MN", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'MN', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Mississippi", "MS", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'MS', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Missouri", "MO", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'MO', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Montana", "MT", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'MT', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Nebraska", "NE", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'NE', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Nevada", "NV", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'NV', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("New Hampshire", "NH", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'NH', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("New Jersey", "NJ", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'NJ', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("New Mexico", "NM", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'NM', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("New York", "NY", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'NY', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("North Carolina", "NC", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'NC', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("North Dakota", "ND", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'ND', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Ohio", "OH", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'OH', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Oklahoma", "OK", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'OK', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Oregon", "OR", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'OR', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Pennsylvania", "PA", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'PA', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Rhode Island", "RH", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'RH', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("South Carolina", "SC", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'SC', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("South Dakota", "SD", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'SD', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Tennessee", "TN", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'TN', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Texas", "TX", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'TX', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Utah", "UT", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'UT', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Vermont", "VT", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'VT', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Virginia", "VA", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'VA', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Washington", "WA", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'WA', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("District of Columbia", "DC", death$Province_State)
+death$Admin2 <-gsub("District of Columbia", "Washington", death$Admin2)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'DC', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("West Virginia", "WV", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'WV', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Wisconsin", "WI", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'WI', paste0(Admin2, "-", Province_State), Admin2))
+death$Province_State <- gsub("Wyoming", "WY", death$Province_State)
+death[["Admin2"]] <- 
+  with(death, ifelse(Province_State == 'WY', paste0(Admin2, "-", Province_State), Admin2))
+
+death$value <-as.numeric(death$value)
+
+
+
+
+
+
+
