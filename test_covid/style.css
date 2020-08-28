@@ -60,6 +60,19 @@ input[type="number"] {
     z-index: 800;
 }
 
+
+/*header*/
+h1 {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 16px;
+}
+
+h2 {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 14px;
+}
+
+
 /*LAYER CONTROL*/
 .leaflet-control-layers-expanded {
     position: relative;
@@ -103,19 +116,71 @@ input[type="number"] {
     border-color: #ec9d26;
 }
 
-/*modal dialogue box 
-.modal dialog{
-  width: 800px;
-  height: 600px;
-  background-color: #262626;
-  opacity: 0.80;
-  font-family: 'Source Code Pro', monospace;
-  color: white;
-  font-size: 17px;
-  position: absolute;
-  right: 10px;
+/*modal dialogue box */
+ .modal-content {
+    position: relative;
+    padding: 15px;
+    width: 850px;
+    background-color: #262626;
+  /*  opacity: 0.80; */
+    font-family: 'Source Code Pro', monospace;
+    color: white;
+    font-size: 17px;
+    right: 10px;
     border-style: solid;
     border-width: thin;
     border-color: #ec9d26;
 }
-*/
+
+/*modal dialogue tabs */
+.nav-tabs {
+    border-bottom: .5px solid gray;
+    color: white;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+    color: white;
+    cursor: default;
+    background-color: #3b3b3b;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+}
+
+#plot {
+   border: none;
+}
+
+/* buttonz*/
+.btn {
+   position: relative;
+    padding: 15px;
+    width: 220px;
+    background-color: #262626;
+    font-family: 'Source Code Pro', monospace;
+    color: white;
+    font-size: 17px;
+    right: 10px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #ec9d26;
+}
+
+
+/*selectinput*/
+.selectize-input.full, .selectize-input  {
+    background-color: #262626;
+    position: relative;
+    padding: 15px;
+    width: 220px;
+    font-family: 'Source Code Pro', monospace;
+    color: white;
+    font-size: 17px;
+    right: 10px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #ec9d26;
+}
+
+/*.selectize-input.full, .selectize-input {
+  width: 300px;
+}*/
