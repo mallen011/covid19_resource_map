@@ -1,5 +1,15 @@
 
 ## GIS and visualization stuff
+library(leafpop)
+library(sf)
+library(tidyverse)
+library(waffle)
+library(ggiraph)
+library(ggtextures)
+library(htmltools)
+library(ggimage)
+library(extrafont)
+library(magick)
 library(leaflet)
 library(rgdal)
 library(ggplot2)
@@ -10,256 +20,204 @@ library(data.table)
 library(dplyr)
 library(data.tree)
 library(circlepackeR) 
-
+library(ggwaffle)
+library(hrbrthemes)
+library(stringr)
 ## SET PATH ##
-path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
-################POLYGONS
-
+  
+####Poverty
 poverty <- read.csv("US_counties_poverty.csv")
 poverty <-data.frame(poverty)
 
-
-#industry <- read.csv("US_IND.csv")
-
+#### Counties - polygons
 counties <- readOGR("shps/us_counties.shp")
-
-counties1 <- data.frame(counties)
-
 ## manually organize county data so it matches with covid data for querying
-counties1$STATE_NAME <- gsub("Alabama", "AL", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'AL', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Arkansas", "AR", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'AR', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Arizona", "AZ", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'AZ', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("California", "CA", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'CA', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Colorado", "CO", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'CO', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Connecticut", "CT", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'CT', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Delaware", "DE", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'DE', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Florida", "FL", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'FL', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Georgia", "GA", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'GA', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Idaho", "ID", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'ID', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Illinois", "IL", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'IL', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Indiana", "IN", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'IN', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Iowa", "IA", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'IA', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Kansas", "KS", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'KS', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Kentucky", "KY", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'KY', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Louisana", "LA", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'LA', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Maine", "ME", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'ME', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Maryland", "MD", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'MD', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Massachusetts", "MA", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'Massachusetts', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Michigan", "MI", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'MI', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Minnesota", "MN", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'MN', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Mississipi", "MS", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'MS', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Missouri", "MO", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'MO', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Montana", "MT", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'MT', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Nebraska", "NE", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'NE', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Nevada", "NV", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'NV', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("New Hampshire", "NH", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'NH', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("New Jersey", "NJ", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'NJ', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("New Mexico", "NM", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'NM', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("New York", "NY", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'NY', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("North Carolina", "NC", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'NC', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("North Dakota", "ND", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'ND', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Ohio", "OH", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'OH', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Oklahoma", "OK", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'OK', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Oregon", "OR", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'OR', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Pennsylvania", "PA", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'PA', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Rhode Island", "RI", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'RI', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("South Carolina", "SC", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'SC', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("South Dakota", "SD", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'SD', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Tennessee", "TN", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'TN', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Texas", "TX", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'TX', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Utah", "UT", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'UT', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Vermont", "VT", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'VT', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Virginia", "VA", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'VA', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Washington", "WA", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'WA', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$NAME <-gsub("District of Columbia", "Washington", counties1$NAME)
-counties1$STATE_NAME <- gsub("WA, DC", "DC", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'DC', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("West VA", "WV", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'WV', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Wisconsin", "WI", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'WI', paste0(NAME, "-", STATE_NAME), NAME))
-counties1$STATE_NAME <- gsub("Wyoming", "WY", counties1$STATE_NAME)
-counties1[["NAME"]] <- 
-  with(counties1, ifelse(STATE_NAME == 'WY', paste0(NAME, "-", STATE_NAME), NAME))
+counties$STATE_NAME <- gsub("Alabama", "AL", counties$STATE_NAME)
+counties$NAME <- 
+  with(counties, ifelse(counties$STATE_NAME == 'AL', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Arkansas", "AR", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'AR', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Arizona", "AZ", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'AZ', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("California", "CA", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'CA', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Colorado", "CO", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'CO', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Connecticut", "CT", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'CT', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Delaware", "DE", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'DE', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Florida", "FL", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'FL', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Georgia", "GA", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'GA', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Idaho", "ID", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'ID', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Illinois", "IL", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'IL', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Indiana", "IN", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'IN', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Iowa", "IA", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'IA', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Kansas", "KS", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'KS', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Kentucky", "KY", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'KY', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Louisana", "LA", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'LA', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Maine", "ME", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'ME', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Maryland", "MD", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'MD', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Massachusetts", "MA", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'Massachusetts', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Michigan", "MI", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'MI', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Minnesota", "MN", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'MN', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Mississipi", "MS", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'MS', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Missouri", "MO", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'MO', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Montana", "MT", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'MT', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Nebraska", "NE", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'NE', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Nevada", "NV", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'NV', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("New Hampshire", "NH", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'NH', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("New Jersey", "NJ", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'NJ', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("New Mexico", "NM", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'NM', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("New York", "NY", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'NY', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("North Carolina", "NC", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'NC', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("North Dakota", "ND", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'ND', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Ohio", "OH", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'OH', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Oklahoma", "OK", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'OK', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Oregon", "OR", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'OR', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Pennsylvania", "PA", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'PA', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Rhode Island", "RI", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'RI', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("South Carolina", "SC", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'SC', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("South Dakota", "SD", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'SD', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Tennessee", "TN", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'TN', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Texas", "TX", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'TX', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Utah", "UT", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'UT', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Vermont", "VT", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'VT', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Virginia", "VA", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'VA', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Washington", "WA", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'WA', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$NAME <-gsub("District of Columbia", "Washington", counties$NAME)
+counties$STATE_NAME <- gsub("WA, DC", "DC", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'DC', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("West VA", "WV", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'WV', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Wisconsin", "WI", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'WI', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
+counties$STATE_NAME <- gsub("Wyoming", "WY", counties$STATE_NAME)
+counties[["NAME"]] <- 
+  with(counties, ifelse(counties$STATE_NAME == 'WY', paste0(counties$NAME, "-", counties$STATE_NAME), counties$NAME))
 
-
-##join poverty to county polyons
+counties1 <-data.frame(counties)
 counties1 <- merge(poverty, counties1, by=c("NAME"))
-
+##join poverty to county polyons
 ##get rid of additional columns made from the merge
-counties1 <- subset(counties1, select = -c(STATE_NAME.y, STATEFP, COUNTYFP, NAMELSAD) )
+counties1 <- subset(counties1, select = -c(STATE_NAME.y, STATEFP, COUNTYFP) )
 
 
 ##make poverty data into character, by first creating a new column and inserting poverty
 ## as character, as to keep the original poverty data as numeric
 counties1["charpov"] <- char_poverty<- as.character(counties1$All.Ages.in.Poverty.Percent)
-
 counties1["not_pov"] <-(100-counties1$All.Ages.in.Poverty.Percent)
-
 counties1["charnot_pov"]<-charnot_pov <- as.character(counties1$not_pov)
 
 
-########################### INDUSTRY EDITS ########################
+
+
+####Industry
 library(stringr)
-
-#us_industry <- read.csv("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/US_industry/us_industry1.csv")
-#data.frame(us_industry)
-#us_industry <-select(us_industry, -contains("Margin"))
-#us_industry <-select(us_industry, -contains("Male"))
-#us_industry <-select(us_industry, -contains("Female"))
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Alabama', '-AL')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Arizona', '-AZ')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Arkansas', '-AR')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, California', '-CA')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Colorado', '-CO')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Connecticut', '-CT')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Delaware', '-DE')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Florida', '-FL')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Georgia', '-GA')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Iowa', '-IA')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Illinois', '-IL')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Indiana', '-IN')#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Idaho', '-ID')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Kansas', '-KS')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Kentucky', '-KY')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Louisiana', '-LA')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Maryland', '-MD')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Maine', '-ME')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Massachussetts', '-MA')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Michigan', '-MI')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Mississippi', '-MS')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Missouri', '-MO')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Montana', '-MT')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Nebraska', '-NE')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Nevada', '-NV')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, North Dakota', '-ND')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, North Carolina', '-NC')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, New Jersey', '-NJ')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, New York', '-NY')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, New Hampshire', '-NH')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, New Mexico', '-NM')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Ohio', '-OH')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Oklahoma', '-OK')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Oregon', '-OR')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Pennsylvania', '-PA')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Rhode Island', '-RI')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, South Dakota', '-SD')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, South Carolina', '-SC')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Tennessee', '-TN')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Texas', '-TX')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Utah', '-UT')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Virginia', '-VA')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Vermont', '-VT')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Washington', '-AL')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, West Virginia', '-WV')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Wisconsin', '-WI')
-#us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Wyoming', '-WY')
-
-
-## pivot the industry data longer so can make a bar graph
-#industry <- industry %>% 
-# pivot_longer(-c(NAME, GEOID), names_to = "type", values_to = "count") 
-#industry$count <- as.numeric(industry$count)
-#industry <- write.csv(industry, "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/US_IND.csv", row.names = FALSE)
 industry <- read.csv("industry.csv")
 industry <- data.frame(industry)
+industry$industry.Industry <- as.factor(industry$industry.Industry)
+industry$industry.total <- as.numeric(industry$industry.total)
+library(tidyverse)
+#library(ggtextures)
+library(magick)
+library(rsvg)
 
-###race###
+#ind_color <- observe({
+#  req(gender_sub)
+#})
+
+
+####race
 race <- read.csv("race.csv")
 race <-data.frame(race)
 race$gender <- as.factor(race$gender)
@@ -271,11 +229,22 @@ race$STATE_NAME <-as.character(race$STATE_NAME)
 race$pathString <- paste("world", race$gender, race$hispanic, race$race, race$makeup, sep = "/")
 
 
-#https://www.census.gov/data/datasets/time-series/demo/popest/2010s-counties-detail.html
-  
 
+#### Land
+land <- read.csv("land.csv")
+land <-data.frame(land)
+land$NAME <- poverty$NAME[match(poverty$ID, land$geoid)]
+land <- land[, c(1, 12, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)]
 
-
+land2<- subset(land, NAME=="Autauga-AL")
+land2$water <- as.numeric(land2$water)
+land2$urban <- as.numeric(land2$urban)
+land2$scrub <- as.numeric(land2$scrub)
+land2$barren <- as.numeric(land2$barren)
+land2$grass <- as.numeric(land2$grass)
+land2$agland <- as.numeric(land2$agland)
+land2$wetland <-as.numeric(land2$wetland)
+land2$forest <-as.numeric(land2$forest)
 ############################COVID19 DATA#############################
 
 ## County Level data covid
@@ -303,7 +272,7 @@ df <- df[ !grepl(paste(delete2, collapse="|"), df$Admin2),]
 
 
 ##reformat so dates are in standard format
-
+ 
 #take out the "X" character in "date" column
 df$date <-substring(df$date,2)
 #Take out first row
@@ -469,7 +438,6 @@ df$value <-as.numeric(df$value)
 
 
 ### deaths
-
 death <- read.csv(file = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv")
 death  = subset(death, select = -c(iso2, iso3, code3, Country_Region, UID, Combined_Key) )
 death <-pivot_longer(death, starts_with("X"), names_to = "date")
@@ -638,9 +606,4 @@ death[["Admin2"]] <-
 
 death$value <-as.numeric(death$value)
 
-
-
-
-
-
-
+rm(us_industry, us_confirmed_long_jhu, public19, race_BakerOR)
