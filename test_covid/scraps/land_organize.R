@@ -1,4 +1,4 @@
-path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 land <- read.csv("land.csv")
