@@ -6,14 +6,14 @@ library(tidyverse)
 library(ggplot2)
 library(ggiraph)
 
-path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
 ################################# LOADING DATA #########################################
 
 
 ## load files, which have been cleaned and organized for this app:
-source("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
+source("C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
 
 #counties1 <- subset.data.frame(counties1, STATE_NAME.x=="AL")
 #race <- subset.data.frame(race, STATE_NAME=="AL")
