@@ -9,13 +9,13 @@ library(extrafont)
 
 library(emojifont)
 library(hrbrthemes)
-extrafont::font_import (path="C:/Users/Clown Baby/Desktop", pattern = "awesome", prompt = FALSE)
+extrafont::font_import (path="C:/Users/user/Desktop", pattern = "awesome", prompt = FALSE)
 extrafont::loadfonts(quiet = TRUE)
 
-path <- "C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/"
+path <- "C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/"
 setwd(path)
 
-source("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
+source("C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/load_and_organize.R")
 
 
 #read file
