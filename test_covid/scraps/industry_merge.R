@@ -4,7 +4,7 @@ library(reshape2)
 
 library(stringr)
 
-us_industry <- read.csv("C:/Users/Clown Baby/Desktop/Countyapp/Countyapp/test_covid/US_industry/us_industry1.csv")
+us_industry <- read.csv("C:/Users/user/Desktop/Countyapp/Countyapp/test_covid/US_industry/us_industry1.csv")
 us_industry <-data.frame(us_industry)
 us_industry <-select(us_industry, -contains("Margin"))
 us_industry$NAME <- stringr::str_replace(us_industry$NAME, '\\ County, Alabama', '-AL')
