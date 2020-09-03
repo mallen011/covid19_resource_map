@@ -20,7 +20,7 @@ ui <- dashboardPage(
     actionButton("zoom2location","Zoom to County"),
     actionButton("sources", "Get Data Sources"),
     actionButton("code","Get Code",
-                 onclick ="window.open('https://github.com/mallen011/covid19_resource_map'"),
+                 onclick ="window.open('https://github.com/mallen011/covid19_resource_map')"),
     actionButton("workflow", "See Workflow")
   ),
   dashboardBody(
