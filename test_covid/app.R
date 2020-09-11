@@ -77,64 +77,64 @@ server <- function(session, input, output) {
 All data represented in this dashboard are from free, reputable, publicly-available sources. 
 </h1><p><br />
 <h2><center><b>Demographics </center> </b> <br />
-US Census Bureau. "County Population by Characteristics: 2010-2019." 
+US Census Bureau. “County Population by Characteristics: 2010-2019.” 
 The United States Census Bureau, The United States Census Bureau, 22 June 2020. <br />
 Click
 <a href="https://www.census.gov/data/tables/time-series/demo/popest/2010s-counties-detail.html">here</a>
 to access this source. <br />
 <p>
 <center><b>Coronovirus </b></center> <br />
-CSSEGIS. "CSSEGISandData/COVID-19." GitHub, e Johns Hopkins University Center 
+CSSEGIS. “CSSEGISandData/COVID-19.” GitHub, e Johns Hopkins University Center 
 for Systems Science and Engineering (JHU CSSE), 2020.  <br />
 Click
 <a href="https://github.com/CSSEGISandData/COVID-19">here</a>
 to access this source. <br />
 <p>
 <center><b>Counties Polyons </b> </center> <br />
-US Census Bureau. "Cartographic Boundary Files - Shapefile."
+US Census Bureau. “Cartographic Boundary Files - Shapefile.”
 The United States Census Bureau, The United States Census Bureau, 18 May 2020. <br />
 Click 
 <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html">here</a>
 to access this source. <br />
 <p>
 <center><b> Poverty </b></center>  <br />
-American Community Survey. "Poverty Status in the Past 12 Months."
+American Community Survey. “Poverty Status in the Past 12 Months.”
 Data.census.gov, US Census Bureau, 2019. <br />
 Click 
 <a href="https://data.census.gov/cedsci/table?q=poverty&tid=ACSST1Y2018.S1701&hidePreview=false">here</a>
 to access this source.<br />
 <p>
 <center><b> Industry </center> </b><br />
-American Community Survey. "Industry by Occupation for the Civilian Employed Population 16 Years and Over." 
+American Community Survey. “Industry by Occupation for the Civilian Employed Population 16 Years and Over.” 
 Data.census.gov, US Census Bureau, 2018. <br />
 Click 
 <a href="https://data.census.gov/cedsci/table?q=s2405&tid=ACSST1Y2018.S2405">here</a>
 to access this source. <br /> </h2>
 <p>
              <h1> Bibliography </h1>
-<h2> Nicola, Maria et al. "The socio-economic implications of the coronavirus pandemic (COVID-19): A review."
+<h2> Nicola, Maria et al. “The socio-economic implications of the coronavirus pandemic (COVID-19): A review.”
 International journal of surgery (London, England) vol. 78 (2020): 185-193. doi:10.1016/j.ijsu.2020.04.018
 <br /> <br /> 
-Laster Pirtle, Whitney N. "Racial Capitalism: A Fundamental Cause of Novel Coronavirus (COVID-19) Pandemic 
-Inequities in the United States." Health education & behavior : the official publication of the 
+Laster Pirtle, Whitney N. “Racial Capitalism: A Fundamental Cause of Novel Coronavirus (COVID-19) Pandemic 
+Inequities in the United States.” Health education & behavior : the official publication of the 
 Society for Public Health Education vol. 47,4 (2020): 504-508. doi:10.1177/1090198120922942 
 <br /> <br /> 
 Adhikari S, Pantaleo NP, Feldman JM, Ogedegbe O, Thorpe L, Troxel AB. Assessment of Community-Level Disparities
 in Coronavirus Disease 2019 (COVID-19) Infections and Deaths in Large US Metropolitan Areas. JAMA Netw Open. 
 2020;3(7):e2016938. doi:10.1001/jamanetworkopen.2020.16938
 <br /> <br /> 
-Ahmed, Faheem, et al. "Why Inequality Could Spread COVID-19." The Lancet Public Health, vol. 5, no. 5, 2020, 
+Ahmed, Faheem, et al. “Why Inequality Could Spread COVID-19.” The Lancet Public Health, vol. 5, no. 5, 2020, 
 doi:10.1016/s2468-2667(20)30085-2. 
 <br /> <br /> 
-Gamio, Lazaro. "The Workers Who Face the Greatest Coronavirus Risk." The New York Times, 15 Mar. 2020,
+Gamio, Lazaro. “The Workers Who Face the Greatest Coronavirus Risk.” The New York Times, 15 Mar. 2020,
 www.nytimes.com/interactive/2020/03/15/business/economy/coronavirus-worker-risk.html. 
 <br /> <br /> 
-Spagnolo, Primavera A., et al. "Sex and Gender Differences in Health: What the COVID-19 Pandemic Can Teach Us." 
-Annals of Internal Medicine, vol. 173, no. 5, 2020, pp. 385-386., doi:10.7326/m20-1941. 
+Spagnolo, Primavera A., et al. “Sex and Gender Differences in Health: What the COVID-19 Pandemic Can Teach Us.” 
+Annals of Internal Medicine, vol. 173, no. 5, 2020, pp. 385–386., doi:10.7326/m20-1941. 
 <br /> <br /> 
-Mazzei, Patricia. "Florida`s Summer of Dread." The New York Times, 2 Aug. 2020. 
+Mazzei, Patricia. “Florida`s Summer of Dread.” The New York Times, 2 Aug. 2020. 
 <br /> <br /> 
-Collins, Caitlyn, et al. "COVID-19 and the Gender Gap in Work Hours." Gender, Work &amp; Organization, 2020,
+Collins, Caitlyn, et al. “COVID‐19 and the Gender Gap in Work Hours.” Gender, Work &amp; Organization, 2020,
 doi:10.1111/gwao.12506. 
 <br /> <br /> 
              </h2>'
@@ -163,6 +163,7 @@ doi:10.1111/gwao.12506.
   
   
   ######################## BOTH MODAL DIALOGUES ####################
+  
   ########### MD PART 1: BY USER SELECT INPUT #############
   
   
@@ -229,9 +230,7 @@ doi:10.1111/gwao.12506.
                                       width = "800px", 
                                       height = "700px")
                   )
-      ),
-      br(),
-      downloadButton('downloadPlot', 'Download')
+      )
     ))
       }
   }) 
@@ -349,14 +348,14 @@ doi:10.1111/gwao.12506.
                                       width = "800px", 
                                       height = "700px")
                   )
-      ),
-      br(),
-      downloadButton('downloadPlot', 'Download')
+      )
     ))
       }
     
   })
-  
+ 
+
+   
   ########### 3. TextOutput boxes ###########    
   
   #### A 1 - textoutput name of county for overall selectinput MD
@@ -372,8 +371,8 @@ doi:10.1111/gwao.12506.
   ##### B - Covid text
   output$covid_text <- renderText({ 
     HTML("This graph shows the daily number of coronivirus cases since it's initial spread.
-  The numbers are updated everyday according to county and state reports, and gathered and shared by JHU blah blah institute's
-  public Github pages. The following tabs display statistics for each county's demographic and industrial makeup. While research
+  The numbers are updated everyday according to county and state reports, and gathered and shared by Johns Hopkins University Center for Systems Science 
+  and Engineering's (JHU CSSE) public Github repositories. The following tabs display statistics for each county's demographic and industrial makeup. While research
   on this public health crisis is still growing, there have been recorded trends that tie the rise and impact of the pandemic
   to socioeconomic factors such as race, income and industry of U.S. communities (Nicola et al., 2020).")
   })    
