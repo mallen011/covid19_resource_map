@@ -227,7 +227,7 @@ doi:10.1111/gwao.12506.
                            textOutput("land_title"),
                            plotOutput("l_waffle", 
                                       width = "800px", 
-                                      height = "730px")
+                                      height = "700px")
                   )
       ),
       br(),
@@ -347,7 +347,7 @@ doi:10.1111/gwao.12506.
                            textOutput("land_title"),
                            plotOutput("l_waffle2", 
                                       width = "800px", 
-                                      height = "730px")
+                                      height = "700px")
                   )
       ),
       br(),
