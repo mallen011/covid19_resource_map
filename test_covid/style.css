@@ -1,0 +1,264 @@
+input[type="number"] {
+  max-width: 80%;
+}
+
+h1{
+  text-align: center;
+  size: 27px;
+}
+
+
+
+/*SIDEBAR */
+ .skin-blue .left-side, .skin-blue .main-sidebar, .skin-blue .wrapper .main-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: 50px;
+    min-height: 100%;
+    width: 230px;
+    z-index: 810;
+    background-color: #353737;
+    font-family: 'Calibri Light';
+    border-style: solid;
+    border-width: thin;
+    border-color: #D4DADC;
+}
+
+/*MAIN HEADER*/
+.skin-blue .main-header .navbar {
+    background-color: #282929;
+    font-family: 'Calibri Light';
+    border-style: solid;
+    border-width: thin;
+    border-color: #D4DADC;
+}
+
+.skin-blue .main-header .logo {
+    background-color: #282929;
+    font-family: 'Calibri Light';
+    border-style: solid;
+    border-width: thin;
+    border-color: #D4DADC;
+}
+
+/*MAP*/
+#map{
+    height: 650px;
+    visibility: inherit;
+    position: relative;
+    outline: none;
+}
+
+/*DASHBOARD BODY (MAP) */
+.content {
+   height: 0px;
+   padding: 0px;
+   margin-right: auto;
+   margin-left: auto;
+   padding-left: 0px;
+   padding-right: 0px;
+   background-color: #282929;
+}
+
+.content-wrapper, .right-side {
+    min-height: 100%;
+     background-color: #282929; 
+    z-index: 800;
+}
+
+
+/*header*/
+h1 {
+  font-family: 'Calibri Light';
+  font-size: 16px;
+}
+
+h2 {
+  font-family: 'Calibri Light';
+  font-size: 14px;
+}
+
+
+/*LAYER CONTROL*/
+.leaflet-control-layers-expanded {
+    position: relative;
+    width: 230px;
+    left: auto;
+    right: 10px;
+    cursor: move;
+  /*  padding: 10px 10px 10px 10px; */
+    border-radius: 5px 5px 5px 5px;
+    color: white;
+    background-color: #353737;
+    font-family: 'Calibri Light';
+    border-style: solid;
+    border-width: thin;
+    border-color: #D4DADC;
+    font-size: 14px;
+    opacity: .80;
+    border: none;
+}
+
+
+.leaflet-control-layers-expanded:hover {
+    opacity: 1;
+    background-color: #282929;
+}
+
+
+/* absolute panel */
+#controls1 {
+  width: 800px;
+  height: 600px;
+  background-color: #353737;
+  opacity: 0.80;
+  font-family: 'Calibri Light';
+  color: white;
+  font-size: 17px;
+  position: absolute;
+  right: 10px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #D4DADC;
+}
+
+/*modal dialogue box */
+ .modal-content {
+    position: relative;
+    padding: 15px;
+    width: 850px;
+    background-color: #353737;
+  /*  opacity: 0.80; */
+    font-family: 'Calibri Light';
+    color: white;
+    font-size: 17px;
+    right: 10px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #D4DADC;
+}
+
+/*modal dialogue tabs */
+.nav-tabs {
+    border-bottom: .5px solid gray;
+    color: white;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+    color: white;
+    cursor: default;
+    background-color: #3b3b3b;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+}
+
+
+.nav>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    color: white;
+}
+
+
+
+#plot, #waffle, #industry, #gender_industry, #l_waffle,  #race1 {
+  
+   border: none;
+}
+
+/* buttonz*/
+.btn {
+   position: relative;
+    padding: 15px;
+    width: 220px;
+    background-color: #353737;
+    font-family: 'Calibri Light';
+    color: white;
+    font-size: 17px;
+    right: 10px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #D4DADC;
+}
+
+.btn:hover {
+    background-color: #484949;
+    border-color: #D36E13;
+    color: white;
+}
+
+
+#report {
+  background-color: #3C3D3D;
+}
+
+#zoom2location{
+  background-color: #484949;
+}
+
+
+#sources {
+  margin-top: 140px;
+  background-color: #515252;
+}
+
+#code{
+ background-color: #5A5B5B;
+}
+
+
+#workflow {
+  background-color: #646464;
+}
+
+
+/*selectinput */
+.selectize-input.full, .selectize-input  {
+    background-color: #2F3030;
+    position: relative;
+    padding: 15px;
+    width: 220px;
+    font-family: 'Calibri Light';
+    color: white;
+    font-size: 17px;
+    right: 10px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #D4DADC;
+}
+
+
+/*.selectize-input.full, .selectize-input {
+  width: 300px;
+}*/
+
+
+svg{
+  fill: #3E4040;
+}
+
+/*circlepackeR*/
+.circlepackeR .node--leaf {
+    fill: #3E4040;
+}
+
+#name, #name1 {
+    text-align: center;
+    font-size: 35px;
+    font-family: "Calibri Light";
+} 
+
+
+#circle_title, #pov_title, #land_title, #ind_title, #gen_title {
+ /*   text-align:; */
+    font-size: 28px;
+    font-family: "Calibri Light";
+} 
+
+#death, #death1 {
+   font-size: 24px;
+    font-family: "Calibri Light";
+    text-align: center;
+}
